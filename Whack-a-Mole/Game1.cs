@@ -108,7 +108,9 @@ namespace Whack_a_Mole
             
             foreach (mole m in moles)
             {
-                if (currentTime >= countDuration)
+                m.Update();
+                
+                /*if (currentTime >= countDuration)
                 {
                     counter++;
                     currentTime -= countDuration;
@@ -117,7 +119,7 @@ namespace Whack_a_Mole
                     if (currentTime >= limit)
                     {
                         //break;
-                    }
+                    }*/
                 }
             }
 
@@ -143,22 +145,11 @@ namespace Whack_a_Mole
                 for (int j = 0; j < holes.GetLength(1); j++)
                 {
                     holes[i, j].Draw(spriteBatch);
-                }
-            }
-            for (int i = 0; i < moles.GetLength(0); i++)
-            {
-                for (int j = 0; j < moles.GetLength(1); j++)
-                {
                     moles[i, j].Draw(spriteBatch);
-                }
-            }
-            for (int i = 0; i < grassOnHole.GetLength(0); i++)
-            {
-                for (int j = 0; j < grassOnHole.GetLength(1); j++)
-                {
                     grassOnHole[i, j].Draw(spriteBatch);
                 }
             }
+          
 
 
 
