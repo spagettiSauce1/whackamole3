@@ -29,6 +29,8 @@ namespace WhackaMole
             this.pos1= new Vector2(x, y);
             this.speed = new Vector2(5, 2);
             this.direction = new Vector2(0, -1);
+            maxPos.Y = startPos.Y - moleTex.Height;
+            startPos = new Vector2(x, y);
             
             
             
@@ -40,7 +42,7 @@ namespace WhackaMole
         public void Update()
         {
             pos1 = pos1 + direction * speed;
-            if (pos1.Y > startPos.Y || pos1.Y < maxPos.Y)
+            if (pos1.Y < startPos.Y || pos1.Y > maxPos.Y)
             {
                 direction = direction * -1;
             }
