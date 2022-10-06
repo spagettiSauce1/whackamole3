@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using WhackaMole;
@@ -22,17 +22,7 @@ namespace Whack_a_Mole
         public Vector2 pos1;
         public Vector2 speed;
         public Vector2 direction;
-        
-
-
-        //Timer
-        int counter = 1;
-        int limit = 15;
-        float countDuration = 5f;
-        float currentTime = 0f;
-
-        Random random;
-
+        public Rectangle moleBox;
 
         //2D arreyer
         hole[,] holes;
@@ -41,8 +31,6 @@ namespace Whack_a_Mole
 
         public int moleWidth;
         public int moleHeight;
-        public Vector2 moleSize;
-
 
         public Game1()
         {
@@ -56,10 +44,7 @@ namespace Whack_a_Mole
             graphics.PreferredBackBufferWidth = 980;
             graphics.PreferredBackBufferHeight = 660;
             graphics.ApplyChanges();
-            for (int i = 0; i < 10; i++)
-            {
-                
-            }
+            
 
             base.Initialize();
         }
@@ -87,49 +72,30 @@ namespace Whack_a_Mole
                     int y = i * 250;
                     holes[i, j] = new hole(holeTex, x, y);
                     grassOnHole[i, j] = new grass(grassTex, x, y);
-                    moles[i, j] = new mole(moleTex, pos1, x, y);
+                    moles[i, j] = new mole(moleTex, pos1, x, y, moleBox);
                 }
             }
-
-            for(int i = 0; i < 9; i++)
-            {
-
-            }
-
         }
 
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
-            currentTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
-
             
             foreach (mole m in moles)
             {
                 m.Update();
-                
-                /*if (currentTime >= countDuration)
+
+                MouseState mouseState = Mouse.GetState();
+                Point MousePos = new Point(mouseState.X, mouseState.Y);
+                if (mouseState.LeftButton == ButtonState.Pressed)
                 {
-                    counter++;
-                    currentTime -= countDuration;
-
-
-                    if (currentTime >= limit)
+                    if(moleBox.Contains(MousePos))
                     {
-                        //break;
-                    }*/
+                        
+                    }
                 }
             }
-
-            
-
-
-
-
-
-
             base.Update(gameTime);
         }
 
@@ -137,8 +103,6 @@ namespace Whack_a_Mole
         {
             GraphicsDevice.Clear(Color.LimeGreen);
             spriteBatch.Begin();
-
-
 
             for (int i = 0; i < holes.GetLength(0); i++)
             {
@@ -149,9 +113,8 @@ namespace Whack_a_Mole
                     grassOnHole[i, j].Draw(spriteBatch);
                 }
             }
-          
 
-
+            Rectangle moleBox = new Rectangle((int)pos1.X, (int)pos1.Y, moleTex.Width, moleTex.Height);
 
             spriteBatch.End();
 
