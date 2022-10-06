@@ -14,16 +14,11 @@ namespace WhackaMole
         public Vector2 pos1= Vector2.Zero;
         public Vector2 speed = new Vector2(0,2);
         public Vector2 direction = new Vector2(0, 1);
-        public Rectangle moleHitBox;
+        public Rectangle moleBox;
         Vector2 startPos;
         Vector2 maxPos;
 
-
-
-        //public int width;
-        //public int height;
-
-        public mole(Texture2D moleTex, pos1, int x, int y)
+        public mole(Texture2D moleTex, Vector2 pos1, int x, int y, Rectangle moleBox)
         {
             this.moleTex = moleTex;
             this.pos1= new Vector2(x, y);
@@ -31,29 +26,24 @@ namespace WhackaMole
             this.direction = new Vector2(0, -1);
             maxPos.Y = startPos.Y - moleTex.Height;
             startPos = new Vector2(x, y);
-            
-            
-            
-
-            //this.width = width;
-            //this.height = height;
+            this.moleBox = moleBox; 
 
         }
         public void Update()
         {
             pos1 = pos1 + direction * speed;
-            if (pos1.Y < startPos.Y || pos1.Y > maxPos.Y)
+            
+            if (pos1.Y > startPos.Y || pos1.Y < maxPos.Y / 2)
             {
                 direction = direction * -1;
-            }
-
+            } 
         }
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(moleTex, pos1,Color.White);
         }
-
     }
+}
     class hole
     {
         Texture2D holeTex;
