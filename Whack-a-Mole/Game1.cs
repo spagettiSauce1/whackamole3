@@ -68,8 +68,8 @@ namespace Whack_a_Mole
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    int x = j * 300;
-                    int y = i * 250;
+                    int x = j * 300 + 100;
+                    int y = i * 250 + 100;
                     holes[i, j] = new hole(holeTex, x, y);
                     grassOnHole[i, j] = new grass(grassTex, x, y);
                     moles[i, j] = new mole(moleTex, pos1, x, y, moleBox);
