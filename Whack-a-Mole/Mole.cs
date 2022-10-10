@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ namespace WhackaMole
     {
         public Texture2D moleTex;
         public Vector2 pos1= Vector2.Zero;
-        public Vector2 speed = new Vector2(0,2);
+        public Vector2 speed = new Vector2(0,1);
         public Vector2 direction = new Vector2(0, 1);
         public Rectangle moleBox;
         Vector2 startPos;
@@ -22,18 +22,20 @@ namespace WhackaMole
         {
             this.moleTex = moleTex;
             this.pos1= new Vector2(x, y);
-            this.speed = new Vector2(5, 2);
-            this.direction = new Vector2(0, -1);
+            this.speed = new Vector2(0, 1);
+            this.direction = new Vector2(0, 1);
+            this.moleBox = moleBox;
+            
+            startPos.Y = y;
             maxPos.Y = startPos.Y - moleTex.Height;
             startPos = new Vector2(x, y);
-            this.moleBox = moleBox; 
-
+            
         }
         public void Update()
         {
-            pos1 = pos1 + direction * speed;
+            pos1 += direction * speed;
             
-            if (pos1.Y > startPos.Y || pos1.Y < maxPos.Y / 2)
+            if (pos1.Y > startPos.Y || pos1.Y < maxPos.Y + 75)
             {
                 direction = direction * -1;
             } 
@@ -77,4 +79,5 @@ namespace WhackaMole
             spriteBatch.Draw(grassTex, pos, Color.White);
         }
     }
-}
+
+
