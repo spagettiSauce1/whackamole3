@@ -23,6 +23,9 @@ namespace Whack_a_Mole
         public Vector2 speed;
         public Vector2 direction;
         public Rectangle moleBox;
+        public int rndX;
+        public int rndY;
+        public int moleActive;
 
         //2D arreyer
         hole[,] holes;
@@ -31,6 +34,8 @@ namespace Whack_a_Mole
 
         public int moleWidth;
         public int moleHeight;
+        
+        public Random random;
 
         public Game1()
         {
@@ -52,11 +57,18 @@ namespace Whack_a_Mole
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            
+            random = new Random();
 
             holeTex = Content.Load<Texture2D>("hole (1)");
             grassTex = Content.Load<Texture2D>("hole_foreground");
             moleTex = Content.Load<Texture2D>("mole");
-
+            
+            for (int i=0; i < 10;i++)
+            {
+            int rndX = random.Next(0, 3);
+            int rndY = random.Next(0, 3);
+            }
 
 
             holes = new hole[3, 3];
@@ -82,6 +94,7 @@ namespace Whack_a_Mole
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             
+            moles[rndX, rndY].activate();
             foreach (mole m in moles)
             {
                 m.Update();
