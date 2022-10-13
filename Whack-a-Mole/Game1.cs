@@ -66,8 +66,8 @@ namespace Whack_a_Mole
             
             for (int i=0; i < 10;i++)
             {
-            int rndX = random.Next(0, 3);
-            int rndY = random.Next(0, 3);
+            rndX = random.Next(0, 3);
+            rndY = random.Next(0, 3);
             }
 
 
