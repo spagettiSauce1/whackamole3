@@ -26,14 +26,22 @@ namespace Whack_a_Mole
         public int rndX;
         public int rndY;
         public int moleActive;
+        
 
         //2D arreyer
         hole[,] holes;
         mole[,] moles;
         grass[,] grassOnHole;
 
+
+        double timeSinceLastFrame = 0;
+        double timeBetweenFrames = 3;
+
         public int moleWidth;
         public int moleHeight;
+
+        public int score;
+        public int timer = 100;
         
         public Random random;
 
@@ -46,8 +54,8 @@ namespace Whack_a_Mole
 
         protected override void Initialize()
         {
-            graphics.PreferredBackBufferWidth = 980;
-            graphics.PreferredBackBufferHeight = 660;
+            graphics.PreferredBackBufferWidth = 960;
+            graphics.PreferredBackBufferHeight = 960;
             graphics.ApplyChanges();
             
 
@@ -63,13 +71,9 @@ namespace Whack_a_Mole
             holeTex = Content.Load<Texture2D>("hole (1)");
             grassTex = Content.Load<Texture2D>("hole_foreground");
             moleTex = Content.Load<Texture2D>("mole");
-            
-            for (int i=0; i < 10;i++)
-            {
-            rndX = random.Next(0, 3);
-            rndY = random.Next(0, 3);
-            }
 
+
+            
 
             holes = new hole[3, 3];
             moles = new mole[3, 3];
@@ -81,10 +85,10 @@ namespace Whack_a_Mole
                 for (int j = 0; j < 3; j++)
                 {
                     int x = j * 300 + 100;
-                    int y = i * 250 + 100;
+                    int y = i * 250 + 250;
                     holes[i, j] = new hole(holeTex, x, y);
                     grassOnHole[i, j] = new grass(grassTex, x, y);
-                    moles[i, j] = new mole(moleTex, pos1, x, y, moleBox);
+                    moles[i, j] = new mole(moleTex, x, y);
                 }
             }
         }
@@ -93,21 +97,28 @@ namespace Whack_a_Mole
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            
-            moles[rndX, rndY].activate();
-            foreach (mole m in moles)
-            {
-                m.Update();
 
-                MouseState mouseState = Mouse.GetState();
-                Point MousePos = new Point(mouseState.X, mouseState.Y);
-                if (mouseState.LeftButton == ButtonState.Pressed)
-                {
-                    if(moleBox.Contains(MousePos))
-                    {
-                        
-                    }
-                }
+            timeSinceLastFrame += gameTime.ElapsedGameTime.TotalSeconds;
+            if(timeSinceLastFrame >= timeBetweenFrames)
+            {
+                timeSinceLastFrame -= timeBetweenFrames;
+                rndX = random.Next(0, 3);
+                rndY = random.Next(0, 3);
+            }
+
+
+            moles[rndX, rndY].activate();            
+            
+            foreach (mole m in moles)
+            {      
+                 m.Update();
+
+                 MouseState mouseState = Mouse.GetState();
+                 Point MousePos = new Point(mouseState.X, mouseState.Y);
+                 if (mouseState.LeftButton == ButtonState.Pressed && moleBox.Contains(MousePos))
+                 {
+                    
+                 }
             }
             base.Update(gameTime);
         }

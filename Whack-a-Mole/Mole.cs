@@ -18,15 +18,17 @@ namespace WhackaMole
         Vector2 startPos;
         Vector2 maxPos;
         bool active;
+        bool moleHit;
 
-        public mole(Texture2D moleTex, Vector2 pos1, int x, int y, Rectangle moleBox)
+        public mole(Texture2D moleTex, int x, int y)
         {
             this.moleTex = moleTex;
             this.pos1= new Vector2(x, y);
             this.speed = new Vector2(0, 1);
             this.direction = new Vector2(0, 1);
-            this.moleBox = moleBox;
+            moleBox = new Rectangle((int)pos1.X, (int)pos1.Y, moleTex.Width, moleTex.Height);
             active = false;
+            moleHit = false;
             startPos.Y = y;
             maxPos.Y = startPos.Y - moleTex.Height;
             startPos = new Vector2(x, y);
@@ -38,12 +40,20 @@ namespace WhackaMole
             {
                 pos1 += direction * speed;
             
-            if (pos1.Y > startPos.Y || pos1.Y < maxPos.Y + 75)
+                if (pos1.Y > startPos.Y || pos1.Y < maxPos.Y + 75)
+                {
+                     direction = direction * -1;
+                }
+                if(pos1.Y> startPos.Y)
+                {
+                    active = false;
+                }
+                moleBox.Location = pos1.ToPoint();
+            }
+            if (moleHit)
             {
                 direction = direction * -1;
-            } 
             }
-            
         }
         public void Draw(SpriteBatch spriteBatch)
         {
@@ -52,6 +62,10 @@ namespace WhackaMole
         public void activate()
         {
             active = true;
+        }
+        public void hitMole()
+        {
+            moleHit = true;
         }
     }
 }
