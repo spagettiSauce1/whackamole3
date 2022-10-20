@@ -116,7 +116,7 @@ namespace Whack_a_Mole
 
                  if (mouseState.LeftButton == ButtonState.Pressed && m.moleBox.Contains(MousePos))
                  {
-                    moles[rndX, rndY].hitMole();
+                    m.moleBox();
                     score = score + 100;
                  }
             }
