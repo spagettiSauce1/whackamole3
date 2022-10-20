@@ -49,3 +49,10 @@
 /processorParam:TextureFormat=Color
 /build:mole.png
 
+#begin scoreText.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:scoreText.spritefont
+

@@ -20,13 +20,14 @@ namespace Whack_a_Mole
         //Mole variabler
         Texture2D moleTex;
         public Vector2 pos1;
-        public Vector2 speed;
-        public Vector2 direction;
         public Rectangle moleBox;
         public int rndX;
         public int rndY;
         public int moleActive;
-        
+
+        SpriteFont spritefont;
+        Vector2 textPos;
+
 
         //2D arreyer
         hole[,] holes;
@@ -71,9 +72,7 @@ namespace Whack_a_Mole
             holeTex = Content.Load<Texture2D>("hole (1)");
             grassTex = Content.Load<Texture2D>("hole_foreground");
             moleTex = Content.Load<Texture2D>("mole");
-
-
-            
+            spritefont = Content.Load<SpriteFont>("scoreText");
 
             holes = new hole[3, 3];
             moles = new mole[3, 3];
@@ -97,6 +96,8 @@ namespace Whack_a_Mole
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+            MouseState mouseState = Mouse.GetState();
+            Point MousePos = new Point(mouseState.X, mouseState.Y);
 
             timeSinceLastFrame += gameTime.ElapsedGameTime.TotalSeconds;
             if(timeSinceLastFrame >= timeBetweenFrames)
@@ -106,18 +107,17 @@ namespace Whack_a_Mole
                 rndY = random.Next(0, 3);
             }
 
+            moles[rndX, rndY].activate();
 
-            moles[rndX, rndY].activate();            
-            
+
             foreach (mole m in moles)
             {      
                  m.Update();
 
-                 MouseState mouseState = Mouse.GetState();
-                 Point MousePos = new Point(mouseState.X, mouseState.Y);
-                 if (mouseState.LeftButton == ButtonState.Pressed && moleBox.Contains(MousePos))
+                 if (mouseState.LeftButton == ButtonState.Pressed && m.moleBox.Contains(MousePos))
                  {
-                    
+                    moles[rndX, rndY].hitMole();
+                    score = score + 100;
                  }
             }
             base.Update(gameTime);
@@ -127,6 +127,15 @@ namespace Whack_a_Mole
         {
             GraphicsDevice.Clear(Color.LimeGreen);
             spriteBatch.Begin();
+
+            string overlayText = null;
+            string overlayText2 = null;
+
+            foreach(mole m in moles)
+            {
+                overlayText = "Score: ";
+                overlayText2 = "Time: ";
+            }
 
             for (int i = 0; i < holes.GetLength(0); i++)
             {
@@ -138,7 +147,8 @@ namespace Whack_a_Mole
                 }
             }
 
-            Rectangle moleBox = new Rectangle((int)pos1.X, (int)pos1.Y, moleTex.Width, moleTex.Height);
+            spriteBatch.DrawString(spritefont,overlayText + score , Vector2.Zero, Color.Yellow);
+            spriteBatch.DrawString(spritefont, overlayText2 , new Vector2(0, 25), Color.Yellow);
 
             spriteBatch.End();
 
