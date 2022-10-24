@@ -28,6 +28,8 @@ namespace Whack_a_Mole
         SpriteFont spritefont;
         Vector2 textPos;
 
+        MouseState oldMouseState;
+        MouseState mouseState;
 
         //2D arreyer
         hole[,] holes;
@@ -38,12 +40,15 @@ namespace Whack_a_Mole
         double timeSinceLastFrame = 0;
         double timeBetweenFrames = 3;
 
+        double timeSinceLastTimerFrame = 0;
+        double timeBetweenTimerFrames = 1;
+
         public int moleWidth;
         public int moleHeight;
 
         public int score;
-        public int timer = 100;
-        
+        public int timer = 15;
+
         public Random random;
 
         public Game1()
@@ -96,8 +101,10 @@ namespace Whack_a_Mole
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            MouseState mouseState = Mouse.GetState();
+            
             Point MousePos = new Point(mouseState.X, mouseState.Y);
+            oldMouseState = mouseState;
+            mouseState = Mouse.GetState();
 
             timeSinceLastFrame += gameTime.ElapsedGameTime.TotalSeconds;
             if(timeSinceLastFrame >= timeBetweenFrames)
@@ -105,7 +112,15 @@ namespace Whack_a_Mole
                 timeSinceLastFrame -= timeBetweenFrames;
                 rndX = random.Next(0, 3);
                 rndY = random.Next(0, 3);
+                
             }
+            timeSinceLastTimerFrame += gameTime.ElapsedGameTime.TotalSeconds;
+            if(timeSinceLastTimerFrame >= timeBetweenTimerFrames)
+            {
+                timeSinceLastTimerFrame -= timeBetweenTimerFrames;
+                timer--;
+            }
+            
 
             moles[rndX, rndY].activate();
 
@@ -114,10 +129,10 @@ namespace Whack_a_Mole
             {      
                  m.Update();
 
-                 if (mouseState.LeftButton == ButtonState.Pressed && m.moleBox.Contains(MousePos))
+                 if (mouseState.LeftButton == ButtonState.Pressed && m.moleBox.Contains(MousePos) && oldMouseState.LeftButton == ButtonState.Released)
                  {
-                    m.moleBox();
-                    score = score + 100;
+                    m.hitMole();
+                    score =+ 100;
                  }
             }
             base.Update(gameTime);
@@ -148,7 +163,7 @@ namespace Whack_a_Mole
             }
 
             spriteBatch.DrawString(spritefont,overlayText + score , Vector2.Zero, Color.Yellow);
-            spriteBatch.DrawString(spritefont, overlayText2 , new Vector2(0, 25), Color.Yellow);
+            spriteBatch.DrawString(spritefont, overlayText2 + timer , new Vector2(0, 25), Color.Yellow);
 
             spriteBatch.End();
 
