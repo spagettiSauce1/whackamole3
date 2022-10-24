@@ -11,13 +11,10 @@ namespace Whack_a_Mole
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
 
-        //Grass variabler
         Texture2D grassTex;
 
-        //Hole variabler
         Texture2D holeTex;
 
-        //Mole variabler
         Texture2D moleTex;
         public Vector2 pos1;
         public Rectangle moleBox;
@@ -25,13 +22,25 @@ namespace Whack_a_Mole
         public int rndY;
         public int moleActive;
 
-        SpriteFont spritefont;
-        Vector2 textPos;
+        Texture2D spritesheet;
+        Rectangle srcRec;
 
+        SpriteFont spritefont;
+        
         MouseState oldMouseState;
         MouseState mouseState;
 
-        //2D arreyer
+        int gS;
+
+        enum GameState
+        {
+            Start = 0,
+            Play = 1,
+            GameOver = 2,
+        }
+
+        GameState currentState = GameState.Start;
+
         hole[,] holes;
         mole[,] moles;
         grass[,] grassOnHole;
@@ -47,7 +56,7 @@ namespace Whack_a_Mole
         public int moleHeight;
 
         public int score;
-        public int timer = 15;
+        public int timer = 30;
 
         public Random random;
 
@@ -78,6 +87,9 @@ namespace Whack_a_Mole
             grassTex = Content.Load<Texture2D>("hole_foreground");
             moleTex = Content.Load<Texture2D>("mole");
             spritefont = Content.Load<SpriteFont>("scoreText");
+            spritesheet = Content.Load<Texture2D>("spritesheet_stone");
+
+            srcRec = new Rectangle(0, 288, 32, 32);
 
             holes = new hole[3, 3];
             moles = new mole[3, 3];
@@ -101,39 +113,67 @@ namespace Whack_a_Mole
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            
-            Point MousePos = new Point(mouseState.X, mouseState.Y);
-            oldMouseState = mouseState;
-            mouseState = Mouse.GetState();
-
-            timeSinceLastFrame += gameTime.ElapsedGameTime.TotalSeconds;
-            if(timeSinceLastFrame >= timeBetweenFrames)
+            switch (currentState)
             {
-                timeSinceLastFrame -= timeBetweenFrames;
-                rndX = random.Next(0, 3);
-                rndY = random.Next(0, 3);
-                
-            }
-            timeSinceLastTimerFrame += gameTime.ElapsedGameTime.TotalSeconds;
-            if(timeSinceLastTimerFrame >= timeBetweenTimerFrames)
-            {
-                timeSinceLastTimerFrame -= timeBetweenTimerFrames;
-                timer--;
-            }
-            
+                case GameState.Start:
 
-            moles[rndX, rndY].activate();
+                    gS = 1;
+                    
+                    if (Keyboard.GetState().IsKeyDown(Keys.Space))
+                    {
+                        currentState = GameState.Play;
+                    }
+                    
+                    break;
 
+                case GameState.Play:
+                    
+                    gS = 2; 
+                    
+                    Point MousePos = new Point(mouseState.X, mouseState.Y);
+                    oldMouseState = mouseState;
+                    mouseState = Mouse.GetState();
 
-            foreach (mole m in moles)
-            {      
-                 m.Update();
+                    timeSinceLastFrame += gameTime.ElapsedGameTime.TotalSeconds;
+                    if (timeSinceLastFrame >= timeBetweenFrames)
+                    {
+                        timeSinceLastFrame -= timeBetweenFrames;
+                        rndX = random.Next(0, 3);
+                        rndY = random.Next(0, 3);
 
-                 if (mouseState.LeftButton == ButtonState.Pressed && m.moleBox.Contains(MousePos) && oldMouseState.LeftButton == ButtonState.Released)
-                 {
-                    m.hitMole();
-                    score =+ 100;
-                 }
+                    }
+                    
+                    timeSinceLastTimerFrame += gameTime.ElapsedGameTime.TotalSeconds;                    
+                    if (timeSinceLastTimerFrame >= timeBetweenTimerFrames)
+                    {
+                        timeSinceLastTimerFrame -= timeBetweenTimerFrames;
+                        timer--;
+                    }
+
+                    moles[rndX, rndY].activate();
+
+                    foreach (mole m in moles)
+                    {
+                        m.Update();
+
+                        if (mouseState.LeftButton == ButtonState.Pressed && m.moleBox.Contains(MousePos) && oldMouseState.LeftButton == ButtonState.Released)
+                        {
+                            m.hitMole();
+                            score = score + 100;
+                        }
+                    }
+
+                    if(timer == 0)
+                    {
+                        currentState = GameState.GameOver;
+                    }
+                    break;
+                case GameState.GameOver:
+
+                    gS = 3;
+                    
+                    break;
+
             }
             base.Update(gameTime);
         }
@@ -143,27 +183,44 @@ namespace Whack_a_Mole
             GraphicsDevice.Clear(Color.LimeGreen);
             spriteBatch.Begin();
 
-            string overlayText = null;
-            string overlayText2 = null;
-
-            foreach(mole m in moles)
+            if (gS == 1)
             {
+                string startText = null;
+                startText = "Press Space to continue";
+
+                spriteBatch.DrawString(spritefont, startText, new Vector2(380,400), Color.Yellow);
+                spriteBatch.Draw(spritesheet,new Vector2(300,300),srcRec,Color.White);
+            }
+
+            if(gS == 2)
+            {
+                string overlayText = null;
+                string overlayText2 = null;
                 overlayText = "Score: ";
                 overlayText2 = "Time: ";
-            }
 
-            for (int i = 0; i < holes.GetLength(0); i++)
-            {
-                for (int j = 0; j < holes.GetLength(1); j++)
+                for (int i = 0; i < holes.GetLength(0); i++)
                 {
-                    holes[i, j].Draw(spriteBatch);
-                    moles[i, j].Draw(spriteBatch);
-                    grassOnHole[i, j].Draw(spriteBatch);
+                    for (int j = 0; j < holes.GetLength(1); j++)
+                    {
+                        holes[i, j].Draw(spriteBatch);
+                        moles[i, j].Draw(spriteBatch);
+                        grassOnHole[i, j].Draw(spriteBatch);
+                    }
                 }
+
+                spriteBatch.DrawString(spritefont, overlayText + score, Vector2.Zero, Color.Yellow);
+                spriteBatch.DrawString(spritefont, overlayText2 + timer, new Vector2(0, 25), Color.Yellow);
+
             }
 
-            spriteBatch.DrawString(spritefont,overlayText + score , Vector2.Zero, Color.Yellow);
-            spriteBatch.DrawString(spritefont, overlayText2 + timer , new Vector2(0, 25), Color.Yellow);
+            if(gS == 3)
+            {
+                string gameOverText = null;
+                gameOverText = "Game Over";
+
+                spriteBatch.DrawString(spritefont, gameOverText, new Vector2(400,420),Color.Yellow);
+            }
 
             spriteBatch.End();
 
