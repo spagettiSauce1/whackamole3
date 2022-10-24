@@ -53,8 +53,7 @@ namespace WhackaMole
                     moleHit = false;
                 }
             }
-            moleBox.Y = (int)pos1.Y;
-            moleBox.X = (int)pos1.X;
+            moleBox.Height = (int)startPos.Y - (int)pos1.Y + 50;
         }
         public void Draw(SpriteBatch spriteBatch)
         {
